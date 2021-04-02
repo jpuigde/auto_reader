@@ -4,12 +4,10 @@ import dash_html_components as html
 from dash.dependencies import Input, Output
 import dash_daq as daq
 from urllib.request import urlopen
-#http://www.readingsoft.com/
-WORDS_MINUTE = 200
 
 
 def read_local():
-    filename = 'text.txt'
+    filename = 'data/text.txt'
     with open(filename, "r") as f:
         word_list = f.read().split()
     return word_list
@@ -31,15 +29,12 @@ def read_quijote():
 def read_shakespeare():
     url = 'https://raw.githubusercontent.com/brunoklein99/deep-learning-notes/master/shakespeare.txt'
     return read_url(url)
-# read_local()
-# read_shakespeare()
 
-
+WORDS_MINUTE = 200
 TEXTS = {'Wiki': read_local,
          'Shakespeare': read_shakespeare,
          'Quijote': read_quijote
          }
-
 word_list = read_local()
 
 app = dash.Dash(__name__)
@@ -54,7 +49,8 @@ app.layout = html.Div(
         ),
         html.Center([html.H2(id='live-update-text', style={'align-items': 'center'})]),
         daq.Slider(id='slider-words-minute',
-                   min=50, max=400, value=200, handleLabel={"showCurrentValue": True, "label": "VALUE"}, step=10),
+                   min=50, max=500, value=WORDS_MINUTE,  # http://www.readingsoft.com/
+                   handleLabel={"showCurrentValue": True, "label": "VALUE"}, step=10),
         html.Button('Restart', id='reset_button'),
         # html.Div(id='current-text'),
         dcc.Markdown(id='current-text',style={'text-align': 'justify'}),
