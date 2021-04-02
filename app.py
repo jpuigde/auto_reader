@@ -2,6 +2,7 @@ import dash
 import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
+import dash_daq as daq
 from urllib.request import urlopen
 #http://www.readingsoft.com/
 WORDS_MINUTE = 200
@@ -52,6 +53,8 @@ app.layout = html.Div(
             clearable=False
         ),
         html.Center([html.H3(id='live-update-text', style={'align-items': 'center'})]),
+        daq.Slider(id='slider-words-minute',
+                   min=50, max=400, value=200, handleLabel={"showCurrentValue": True, "label": "VALUE"}, step=10),
         html.Button('Restart', id='reset_button'),
         html.Div(id='full-text'),
         dcc.Interval(
@@ -61,7 +64,6 @@ app.layout = html.Div(
         )
     ])
 )
-
 
 @app.callback(Output('full-text', 'children'),
               Input('text-selected', 'value'))
