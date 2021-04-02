@@ -15,7 +15,7 @@ def read_local():
     return word_list
 
 
-def read_url(url, n=200):
+def read_url(url, n=1000):
     content = urlopen(url)
     word_list = []
     for line in content:
@@ -57,7 +57,7 @@ app.layout = html.Div(
                    min=50, max=400, value=200, handleLabel={"showCurrentValue": True, "label": "VALUE"}, step=10),
         html.Button('Restart', id='reset_button'),
         # html.Div(id='current-text'),
-        dcc.Markdown(id='current-text'),
+        dcc.Markdown(id='current-text',style={'text-align': 'justify'}),
         html.Div(id='hidden-div', style={'display':'none'}),
         dcc.Interval(
             id='interval-component',
