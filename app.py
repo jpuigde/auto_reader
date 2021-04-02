@@ -15,12 +15,12 @@ def read_local():
     return word_list
 
 
-def read_url(url):
+def read_url(url, n=200):
     content = urlopen(url)
     word_list = []
     for line in content:
-        word_list += str(line).split(' ')
-    return word_list
+        word_list += str(line.decode('utf-8')).split(' ')
+    return word_list[:n]
 
 
 def read_quijote():
@@ -52,11 +52,13 @@ app.layout = html.Div(
             value='Wiki',
             clearable=False
         ),
-        html.Center([html.H3(id='live-update-text', style={'align-items': 'center'})]),
+        html.Center([html.H2(id='live-update-text', style={'align-items': 'center'})]),
         daq.Slider(id='slider-words-minute',
                    min=50, max=400, value=200, handleLabel={"showCurrentValue": True, "label": "VALUE"}, step=10),
         html.Button('Restart', id='reset_button'),
-        html.Div(id='full-text'),
+        # html.Div(id='current-text'),
+        dcc.Markdown(id='current-text'),
+        html.Div(id='hidden-div', style={'display':'none'}),
         dcc.Interval(
             id='interval-component',
             interval=60000/WORDS_MINUTE, # in milliseconds
@@ -65,18 +67,29 @@ app.layout = html.Div(
     ])
 )
 
+
 @app.callback(Output('interval-component', 'interval'),
               Input('slider-words-minute', 'value'))
 def update_words_minute(words_minute):
     return 60000 / words_minute
 
 
-@app.callback(Output('full-text', 'children'),
+@app.callback(Output('hidden-div', 'children'),
               Input('text-selected', 'value'))
 def update_text(name):
     global word_list
     word_list = TEXTS[name]()
     return ' '.join(word_list)
+
+
+@app.callback(Output('current-text', 'children'),
+              Input('interval-component', 'n_intervals'))
+def update_word(n):
+    global word_list
+    pre_text = ' '.join(word_list[:n])
+    marked_word = '**' + word_list[n] + '**'
+    post_text = ' '.join(word_list[(n+1):])
+    return pre_text + ' ' + marked_word + ' ' + post_text
 
 
 @app.callback(Output('live-update-text', 'children'),
