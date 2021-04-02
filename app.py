@@ -64,6 +64,10 @@ app.layout = html.Div(
         )
     ])
 )
+@app.callback(Output('interval-component', 'interval'),
+              Input('slider-words-minute', 'value'))
+def update_words_minute(words_minute):
+    return 60000 / words_minute
 
 @app.callback(Output('full-text', 'children'),
               Input('text-selected', 'value'))
